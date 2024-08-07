@@ -1,9 +1,12 @@
 import { React } from 'react';
-// import "./css/IndexPage.css";
+import "../../src/index.css";
 import "./css/common.css";
 import "./css/main.css";
 
+
 function IndexPage(){
+  const today = new Date();
+  const TodayDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
   return (
     <div>
       <header className="header">
@@ -14,14 +17,14 @@ function IndexPage(){
             </a>
           </h1>
           <div className="login-text">
-            <p>환영합니다 <strong>홍길동</strong>님!</p>
-            <button type="button" className="btn-logout">로그아웃</button>
+            <p>환영합니다 <strong>게스트</strong>님!</p>
+            <button type="button" className="btn-logout">로그인</button>
           </div>
         </div>
       </header>
       <main className="main max-width">
         <section className="main-form">
-          <h2 className="heart-title">2023.02.27의 비밀일기</h2>
+          <h2 className="heart-title">{TodayDate} 오늘의 비밀일기</h2>
           <form className="form">
             <div>
               <label htmlFor="diary-title" className="a11y-hidden">제목</label>
@@ -98,3 +101,4 @@ function IndexPage(){
 }
 
 export default IndexPage;
+

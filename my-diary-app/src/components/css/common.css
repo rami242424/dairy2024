@@ -139,13 +139,13 @@ body {
   align-items: center;
 }
 .btn-login {
-  background-image: url(/img/icon-login.svg);
+  background-image: url(../../../public/img/icon-login.svg);
 }
 .btn-join {
-  background-image: url(/img/icon-join.svg);
+  background-image: url(../../../public/img/icon-join.svg);
 }
 .btn-logout {
-  background-image: url(/img/icon-logout.svg);
+  background-image: url(../../../public/img/icon-logout.svg);
 }
 
 /* 로그인 */
