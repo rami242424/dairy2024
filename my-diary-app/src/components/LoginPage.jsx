@@ -1,8 +1,14 @@
 
 import React from "react";
 import "./css/common.css";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage(){
+  const navagate = useNavigate();
+  const joinBtn = function(){
+    navagate('/join');
+  }
+
   return (
     <div>
       <header className="header">
@@ -12,7 +18,7 @@ function LoginPage(){
               <img src="./img/logo.svg" alt="두근두근 비밀일기" />
             </a>
           </h1>
-          <a className="btn-join" href="./join.html">회원가입</a>
+          <button onClick={joinBtn} className="btn-join" href="./join.html">회원가입</button>
         </div>
       </header>
       <main className="login max-width">
