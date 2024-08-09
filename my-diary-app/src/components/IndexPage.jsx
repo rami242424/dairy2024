@@ -25,6 +25,7 @@ function IndexPage(){
     navigate('/login');
   }
 
+  // form이 submit 될때 
   const submitBtn = function(e){
     e.preventDefault();
     if(!title || !content){
@@ -32,6 +33,7 @@ function IndexPage(){
       return;
     }
 
+    // 저장하기위해 새로운 객체 생성
     const newDiary = {
       id : Date.now(),
       title : title,
@@ -39,10 +41,14 @@ function IndexPage(){
       data: TodayDate
     };
 
+    // 새로운 다이어리 만들기
     const updatedDiaries = [...diaries, newDiary];
     setDiaries(updatedDiaries);
+
+    // 로컬에 새로운 다이어리 저장
     localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
 
+    // 저장 후 제목과 내용을 비우기
     setTitle('');
     setContent('');
   }
