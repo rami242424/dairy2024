@@ -1,7 +1,12 @@
 import React from "react";
 import "./css/common.css";
+import { useNavigate } from "react-router-dom";
 
 function JoinPage(){
+  const navagate = useNavigate();
+  const loginBtn = function(){
+    navagate('/login');
+  }
   return (
     <div>
       <header className="header">
@@ -11,7 +16,7 @@ function JoinPage(){
               <img src="./img/logo.svg" alt="두근두근 비밀일기" />
             </a>
           </h1>
-          <a className="btn-login" href="./login.html">로그인</a>
+          <button onClick={loginBtn} className="btn-login">로그인</button>
         </div>
       </header>
       <main className="login max-width">

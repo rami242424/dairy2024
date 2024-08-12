@@ -53,6 +53,10 @@ function IndexPage(){
     setContent('');
   }
 
+  function editBtn(){
+    localStorage.getItem('id', )
+  }
+
   return (
     <div>
       <header className="header">
@@ -111,11 +115,11 @@ function IndexPage(){
                 </header>
                 <p className="article-content">{diary.content}</p>
                 <div className="button-group">
-                  <button type="button">
+                  <button type="button" onClick={editBtn}>
                     <img src="/img/icon-edit.svg" alt="수정" />
                   </button>
                   <span></span>
-                  <button type="button">
+                  <button type="button" onClick={delBtn}>
                     <img src="/img/icon-delete.svg" alt="삭제" />
                   </button>
                 </div>
