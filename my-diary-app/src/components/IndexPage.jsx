@@ -10,6 +10,9 @@ function IndexPage(){
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [diaries, setDiaries] = useState([]);
+  // editID : 현재 수정 중인 일기의 id
+  const [editId, setEditId] = useState(null); 
+
 
 
   // localStorage에서 일기 목록 불러오기
@@ -33,28 +36,67 @@ function IndexPage(){
       return;
     }
 
-    // 저장하기위해 새로운 객체 생성
+    if(editId) {
+      // 수정 중인 경우, 기존 일기를 업데이트
+      const updatedDiaries = diaries.map(diary => 
+        diary.id === editId ? { ...diary, title, content, data: TodayDate } : diary
+      );
+
+      setDiaries(updatedDiaries);
+      localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
+      setEditId(null) // 수정완료 후 상태 초기화
+    }
+    else {
+
+    // 새로운 객체 생성(for 저장)
     const newDiary = {
       id : Date.now(),
       title : title,
       content: content,
       data: TodayDate
     };
-
-    // 새로운 다이어리 만들기
+  
+    // 새로운 일기
     const updatedDiaries = [...diaries, newDiary];
     setDiaries(updatedDiaries);
 
-    // 로컬에 새로운 다이어리 저장
+    // 로컬에 새 일기 저장
     localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-
-    // 저장 후 제목과 내용을 비우기
+  }
+    // 저장 후 => 제목과 내용 칸 비우기
     setTitle('');
     setContent('');
   }
 
-  function editBtn(){
-    localStorage.getItem('id', )
+  // 수정버튼 클릭시
+  function editBtn(id){
+    const diaryEdit = diaries.find(diary => diary.id === id);
+    
+    // if(diaryEdit) 이 존재한다면
+    if(diaryEdit) {
+      setTitle(diaryEdit.title);
+      setContent(diaryEdit.content);
+      setEditId(id); // 수정 중인 일기의 id를 저장
+    }
+  }
+
+  // 삭제버튼 클릭시
+  function delBtn(id){
+    const updatedDiaries = diaries.filter(diary => diary.id !== id);
+    setDiaries(updatedDiaries);
+    localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
+
+     // 폼에 입력된 내용도 지우기
+     setTitle(''); 
+     setContent('');
+     setEditId(null); // 수정 중인 상태 초기화
+  }
+
+  // 취소버튼 틀릭시 폼 초기화
+  const cancelEdit = function(){
+    setTitle('');
+    setContent('');
+    setEditId(null);
   }
 
   return (
@@ -98,7 +140,12 @@ function IndexPage(){
               >
               </textarea>
             </div>
-            <button type="submit">작성하기</button>
+            <div className="form-button">
+              <button type="submit">작성하기</button>
+              {editId && (
+                <button type="button" onClick={cancelEdit}>취소</button>
+              )}
+            </div>
           </form>
         </section>
         <section className="main-diary">
@@ -115,11 +162,12 @@ function IndexPage(){
                 </header>
                 <p className="article-content">{diary.content}</p>
                 <div className="button-group">
-                  <button type="button" onClick={editBtn}>
+                  {/* <button type="button" onClick={() => console.log(diary.id)}> */}
+                  <button type="button" onClick={() => editBtn(diary.id)}>
                     <img src="/img/icon-edit.svg" alt="수정" />
                   </button>
                   <span></span>
-                  <button type="button" onClick={delBtn}>
+                  <button type="button" onClick={() => delBtn(diary.id)}>
                     <img src="/img/icon-delete.svg" alt="삭제" />
                   </button>
                 </div>

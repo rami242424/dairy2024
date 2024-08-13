@@ -231,3 +231,19 @@ body {
   padding: 10px;
   font: inherit;
 }
+
+/* form styles */
+.form-button {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px; /* 두 버튼 사이의 간격 */
+}
+
+.form-button button {
+  flex: 1;
+  height: 48px;
+  background-color: #29363d;
+  color: #f4f5f5;
+  border-radius: 4px;
+  text-align: center;
+}
