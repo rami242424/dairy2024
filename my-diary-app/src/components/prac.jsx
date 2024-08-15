@@ -6,101 +6,62 @@ import { useNavigate } from 'react-router-dom';
 
 
 function IndexPage(){
-  const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [diaries, setDiaries] = useState([]);
-  // editID : 현재 수정 중인 일기의 id
-  const [editId, setEditId] = useState(null); 
+    const navigate = useNavigate();
+    const loginBtn = () => navigate('/login');
+    const Today = new Date();
+    const TodayDate = `
+        ${Today.getFullYear()}.${(Today.getMonth() + 1).toString().padStart(2, "0")}.${(Today.getDate()).toString().padStart(2, "0")}
+    `;
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+
+    // localStorage에서 일기 목록 불러오기
 
 
+    // form이 submit 될때 
+    const submitBtn = function(e){
+        e.preventDefailt();
+        if(!title || !content){
+            alert("제목과 내용을 모두 입력하세요.");
+            return;
+        }
 
-  // 일기 목록 불러오기(localStorage에서)
-  useEffect(()=> {
-    const storedDiaries = JSON.parse(localStorage.getItem('diaries')) || [];
-    setDiaries(storedDiaries);
-  }, []);
+        if(editId) {
+        // 수정 중인 경우, 기존 일기를 업데이트
 
-  const today = new Date();
-  const TodayDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${(today.getDate()).toString().padStart(2, '0')}`;
+        } else {
 
-  const loginBtn  = function(){
-    navigate('/login');
-  }
+        // 새로운 객체 생성(for 저장)
+        const newDiary = {
+            id : Date.now(),
+            title : title,
+            content : content,
+            data : TodayDate            
+        };
 
-  // form이 submit 될때 
-  const submitBtn = function(e){
-    e.preventDefault();
-    if(!title || !content){
-      alert("제목과 내용을 모두 입력해주세요.");
-      return;
+        // 새로운 일기
+        
+
+        // 로컬에 새 일기 저장
+
+        }
+        // 저장 후 => 제목과 내용 칸 비우기
+        setTitle('');
+        setContent('');
     }
-
-    if(editId) {
-      // 수정 중인 경우, 기존 일기를 업데이트
-      const updatedDiaries = diaries.map(diary => 
-        diary.id === editId ? { ...diary, title, content, data: TodayDate } : diary
-      );
-
-      setDiaries(updatedDiaries);
-      localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-      setEditId(null) // 수정완료 후 상태 초기화
-    }
-
-    else {
-      // 수정 중이 아닌 경우, 즉 새로운 일기를 작성할때 실행되는 코드
-      // (editId = null 인 경우)
-
-    // 새로운 객체 생성(for 저장)
-    const newDiary = {
-      id : Date.now(),
-      title : title,
-      content: content,
-      data: TodayDate
-    };
-  
-    // 새로운 일기
-    const updatedDiaries = [...diaries, newDiary];
-    setDiaries(updatedDiaries);
-
-    // 로컬에 새 일기 저장
-    localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-  }
-    // 저장 후 => 제목과 내용 칸 비우기
-    setTitle('');
-    setContent('');
-  }
 
   // 수정버튼 클릭시
-  function editBtn(id){
-    const diaryEdit = diaries.find(diary => diary.id === id);
-    
-    // if(diaryEdit) 이 존재한다면
-    if(diaryEdit) {
-      setTitle(diaryEdit.title);
-      setContent(diaryEdit.content);
-      setEditId(id); // 수정 중인 일기의 id를 저장
+    function editBtn(id){
+
     }
-  }
 
   // 삭제버튼 클릭시
-  function delBtn(id){
-    const updatedDiaries = diaries.filter(diary => diary.id !== id);
-    setDiaries(updatedDiaries);
-    localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
+    function delBtn(id){
 
-     // 폼에 입력된 내용도 지우기
-      setTitle(''); 
-      setContent('');
-      setEditId(null); // 수정 중인 상태 초기화
-  }
+    }
 
   // 취소버튼 틀릭시 폼 초기화
-  const cancelEdit = function(){
-    setTitle('');
-    setContent('');
-    setEditId(null);
-  }
+
 
   return (
     <div>
@@ -166,11 +127,11 @@ function IndexPage(){
                 <p className="article-content">{diary.content}</p>
                 <div className="button-group">
                   {/* <button type="button" onClick={() => console.log(diary.id)}> */}
-                  <button type="button" onClick={() => editBtn(diary.id)}>
+                  <button type="button">
                     <img src="/img/icon-edit.svg" alt="수정" />
                   </button>
                   <span></span>
-                  <button type="button" onClick={() => delBtn(diary.id)}>
+                  <button type="button" >
                     <img src="/img/icon-delete.svg" alt="삭제" />
                   </button>
                 </div>
