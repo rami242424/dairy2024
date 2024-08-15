@@ -89,10 +89,10 @@ function IndexPage(){
     setDiaries(updatedDiaries);
     localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
 
-     // 폼에 입력된 내용도 지우기
-      setTitle(''); 
-      setContent('');
-      setEditId(null); // 수정 중인 상태 초기화
+    // 폼에 입력된 내용도 지우기
+    setTitle(''); 
+    setContent('');
+    setEditId(null); // 수정 중인 상태 초기화
   }
 
   // 취소버튼 틀릭시 폼 초기화
