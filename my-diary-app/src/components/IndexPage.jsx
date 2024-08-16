@@ -95,7 +95,7 @@ function IndexPage(){
     setEditId(null); // 수정 중인 상태 초기화
   }
 
-  // 취소버튼 틀릭시 폼 초기화
+  // 취소버튼 클릭시 폼 초기화
   const cancelEdit = function(){
     setTitle('');
     setContent('');
