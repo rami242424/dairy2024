@@ -1,12 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 import "./css/common.css";
 import { useNavigate } from "react-router-dom";
 
 function JoinPage(){
-  const navagate = useNavigate();
+  const navigate = useNavigate();
   const loginBtn = function(){
-    navagate('/login');
+    navigate('/login');
   }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [error, setErrors] = useState({});
+  const [validateErrors, setValidateErrors] = useState({});
+  
+
+  
+
+
+  // 로그인폼 유효성 검사
+  const validateLoginForm = () => {
+    const errors = {}; // 유효성 검사에서 발생한 오류를 객체로 저장
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if(!emailRegex.test(email)){
+      errors.email = "올바른 이메일 형식을 입력하세요.";
+    }
+
+    if(password.length < 4){
+      errors.password = "비밀번호는 최소 6자 이상이어야 합니다.";
+    }
+
+    if(nickname.length < 2){
+      errors.nickname = "닉네임은 최소 2자 이상이어야 합니다.";
+    }
+    return errors;
+  }
+
+  // 사용자가 폼을 제출 했을 때 실행(유효성검사>통과시 사용자 데이터를 로컬스토리지에 저장>로그인페이지로 이동)
+  const handleSubmit = (e) => { // 폼 제출과 같은 이벤트에 대한 정보를 포함
+    e.preventDefault(); // 브라우저의 기본 동작을 막기 위해 사용 // 폼이 제출될 때, 브라우저는 기본적으로 페이지를 새로고침합니다. e.preventDefault();를 호출하면 이 기본 동작이 방지됩니다. 이렇게 함으로써, 폼 제출 후에 페이지가 새로고침되지 않고, 자바스크립트 코드를 통해 폼 데이터를 처리할 수 있습니다.
+
+
+    const validationErrors = validateLoginForm();
+
+    if(Object.keys(validateErrors).length > 0){ //  validationErrors 객체의 키들(즉, 오류가 발생한 필드들)을 배열로 반환
+      setErrors(validationErrors);
+    } else {
+      // 유효성 검사를 통과하면 로컬 스토리지에 저장
+    }
+  }
+
+  const joinBtn = () => {
+    localStorage.setItem('userName', nickname);
+    localStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
+    navigate('/');
+  }
+
   return (
     <div>
       <header className="header">
@@ -89,9 +138,15 @@ function JoinPage(){
           </div>
           <div>
             <label for="user-nick">닉네임</label>
-            <input id="user-nick" type="text" />
+            <input 
+              id="user-nick" 
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="닉네임 입력"
+            />
           </div>
-          <button type="submit">회원가입</button>
+          <button onClick={joinBtn} type="submit">회원가입</button>
         </form>
       </main>
       <footer className="footer">

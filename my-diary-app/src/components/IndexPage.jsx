@@ -12,6 +12,15 @@ function IndexPage(){
   const [diaries, setDiaries] = useState([]);
   // editID : 현재 수정 중인 일기의 id
   const [editId, setEditId] = useState(null); 
+  const userName = localStorage.getItem('userName') || '게스트'; // 로컬 스토리지에서 사용자 이름 가져오기
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // 로컬 스토리지에서 로그인 상태 가져오기
+
+  // 로그인 상태시 로그아웃으로 바꾸기
+  const handleLogout = () => {
+    localStorage.removeItem('userName');
+    localStorage.removeItem('isLoggedIn'); // 로그인 상태 제거
+    navigate('/login'); // 로그인 페이지로 이동
+  };
 
 
 
@@ -112,8 +121,12 @@ function IndexPage(){
             </a>
           </h1>
           <div className="login-text">
-            <p>환영합니다 <strong>게스트</strong>님!</p>
-            <button onClick={loginBtn} type="button" className="btn-logout">로그인</button>
+            <p>환영합니다 <strong>{userName}</strong>님!</p>
+            {isLoggedIn ? (
+              <button onClick={handleLogout} type="button" className="btn-logout">로그아웃</button>
+            ) : (
+              <button onClick={() => navigate('/login')} type="button" className="btn-logout">로그인</button>
+            )}
           </div>
         </div>
       </header>
