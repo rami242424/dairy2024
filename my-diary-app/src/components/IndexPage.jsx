@@ -174,7 +174,7 @@ function IndexPage(){
               <article className="diary-article">
                 <header>
                   <h3 className="article-title">{diary.title}</h3>
-                  <time className="article-time" datetime="2023-02-24">{diary.data}</time>
+                  <time className="article-time" dateTime="2023-02-24">{diary.data}</time>
                 </header>
                 <p className="article-content">{diary.content}</p>
                 <div className="button-group">
