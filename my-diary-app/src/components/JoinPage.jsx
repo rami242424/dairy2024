@@ -1,72 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./css/common.css";
 import { useNavigate } from "react-router-dom";
 
-function JoinPage(){
+function JoinPage() {
   const navigate = useNavigate();
-  const loginBtn = function(){
-    navigate('/login');
-  }
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [errors, setErrors] = useState({});
-  const [validateErrors, setValidateErrors] = useState({});
-  const [users, setUsers] = useState([]); // 로컬 사용자 저장소
+  const [users, setUsers] = useState([]);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
 
-  
-
+  useEffect(() => {
+    // 컴포넌트가 처음 렌더링될 때 로컬스토리지에서 사용자 데이터를 가져옴
+    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+    setUsers(storedUsers);
+  }, []);
 
   // 로그인폼 유효성 검사
-  const validateLoginForm = () => {
+  const validateLoginForm = (currentUsers) => {
     const errors = {}; // 유효성 검사에서 발생한 오류를 객체로 저장
 
-    if(!emailRegex.test(email)){
+    if (!emailRegex.test(email)) {
       errors.email = "올바른 이메일 형식을 입력하세요.";
     }
 
-    if(password.length < 6){
+    if (password.length < 6) {
       errors.password = "비밀번호는 최소 6자 이상이어야 합니다.";
     }
 
-    if(nickname.length < 2){
+    if (nickname.length < 2) {
       errors.nickname = "닉네임은 최소 2자 이상이어야 합니다.";
     }
 
-     // 중복된 이메일 검증
-    if (users.some(user => user.email === email)) {
+    // 중복된 이메일 검증
+    if (currentUsers.some(user => user.email === email)) {
       errors.email = '이미 사용중인 이메일입니다.';
     }
 
     // 중복된 닉네임 검증
-    if (users.some(user => user.nickname === nickname)) {
+    if (currentUsers.some(user => user.nickname === nickname)) {
       errors.nickname = '이미 사용중인 닉네임입니다.';
     }
 
-    setErrors(errors);  // 오류 상태 업데이트
-    return Object.keys(errors).length === 0;  // 오류가 없으면 true 반환
-  }
+    setErrors(errors); // 오류 상태 업데이트
+    return Object.keys(errors).length === 0; // 오류가 없으면 true 반환
+  };
 
   // 사용자가 폼을 제출 했을 때 실행(유효성검사>통과시 사용자 데이터를 로컬스토리지에 저장>로그인페이지로 이동)
-  const handleSubmit = (e) => { // 폼 제출과 같은 이벤트에 대한 정보를 포함
-    e.preventDefault(); // 브라우저의 기본 동작을 막기 위해 사용 // 폼이 제출될 때, 브라우저는 기본적으로 페이지를 새로고침합니다. e.preventDefault();를 호출하면 이 기본 동작이 방지됩니다. 이렇게 함으로써, 폼 제출 후에 페이지가 새로고침되지 않고, 자바스크립트 코드를 통해 폼 데이터를 처리할 수 있습니다.
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
+    // 로컬스토리지에서 사용자 데이터를 가져옴
+    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+    setUsers(storedUsers); // 상태 업데이트
 
-    const validationErrors = validateLoginForm();
+    const validationErrors = validateLoginForm(storedUsers);
 
-    if(Object.keys(validateErrors).length > 0){ //  validationErrors 객체의 키들(즉, 오류가 발생한 필드들)을 배열로 반환
+    if (Object.keys(validationErrors).length > 0) {
+      // 유효성 검사에서 오류 발생 시 상태 업데이트
       setErrors(validationErrors);
     } else {
       // 유효성 검사를 통과하면 로컬 스토리지에 저장
+      const newUser = { email, password, nickname };
+      const updatedUsers = [...storedUsers, newUser];
+
+      localStorage.setItem("users", JSON.stringify(updatedUsers));
       localStorage.setItem("email", email);
       localStorage.setItem("nickname", nickname);
       localStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
+
       navigate("/");
     }
-  }
-
+  };
 
   return (
     <div>
@@ -77,7 +84,7 @@ function JoinPage(){
               <img src="./img/logo.svg" alt="두근두근 비밀일기" />
             </a>
           </h1>
-          <button onClick={loginBtn} className="btn-login">로그인</button>
+          <button onClick={() => navigate('/login')} className="btn-login" >로그인</button>
         </div>
       </header>
       <main className="login max-width">
@@ -148,11 +155,17 @@ function JoinPage(){
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.email && <p className="error">{errors.email}</p>}  {/* 이메일 오류 메시지 표시 */}
+            {errors.email && <p className="error">{errors.email}</p>}
           </div>
           <div>
             <label htmlFor="user-pw">비밀번호</label>
-            <input id="user-pw" type="password" />
+            <input 
+              id="user-pw"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} 
+            />
+            {errors.password && <p className="error">{errors.password}</p>}
           </div>
           <div>
             <label htmlFor="user-nick">닉네임</label>
@@ -163,8 +176,9 @@ function JoinPage(){
               onChange={(e) => setNickname(e.target.value)}
               placeholder="닉네임 입력"
             />
+            {errors.nickname && <p className="error">{errors.nickname}</p>}
           </div>
-          <button onClick={handleSubmit} type="submit" >회원가입</button>
+          <button onClick={handleSubmit} type="submit">회원가입</button>
         </form>
       </main>
       <footer className="footer">
