@@ -4,112 +4,87 @@ import "./css/common.css";
 import "./css/main.css";
 import { useNavigate } from 'react-router-dom';
 
-
-function IndexPage(){
+function IndexPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [diaries, setDiaries] = useState([]);
-  // editID : 현재 수정 중인 일기의 id
   const [editId, setEditId] = useState(null); 
-  const userName = localStorage.getItem('userName') || '게스트'; // 로컬 스토리지에서 사용자 이름 가져오기
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // 로컬 스토리지에서 로그인 상태 가져오기
 
-  // 로그인 상태시 로그아웃으로 바꾸기
+  // 로그인한 유저의 닉네임 가져오기
+  const nickname = localStorage.getItem('nickname') || '게스트'; 
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; 
+
+  // 로그아웃 처리
   const handleLogout = () => {
-    localStorage.removeItem('userName');
-    localStorage.removeItem('isLoggedIn'); // 로그인 상태 제거
-    navigate('/login'); // 로그인 페이지로 이동
+    localStorage.removeItem('nickname');
+    localStorage.removeItem('isLoggedIn');
+    navigate('/login');
   };
 
-
-
-  // 일기 목록 불러오기(localStorage에서)
-  useEffect(()=> {
+  useEffect(() => {
     const storedDiaries = JSON.parse(localStorage.getItem('diaries')) || [];
     setDiaries(storedDiaries);
   }, []);
 
   const today = new Date();
-  const TodayDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${(today.getDate()).toString().padStart(2, '0')}`;
+  const TodayDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getDate().toString().padStart(2, '0')}`;
 
-  const loginBtn  = function(){
-    navigate('/login');
-  }
-
-  // form이 submit 될때 
-  const submitBtn = function(e){
+  const submitBtn = (e) => {
     e.preventDefault();
-    if(!title || !content){
+    if (!title || !content) {
       alert("제목과 내용을 모두 입력해주세요.");
       return;
     }
 
-    if(editId) {
-      // 수정 중인 경우, 기존 일기를 업데이트
+    if (editId) {
       const updatedDiaries = diaries.map(diary => 
         diary.id === editId ? { ...diary, title, content, data: TodayDate } : diary
       );
-
       setDiaries(updatedDiaries);
       localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-      setEditId(null) // 수정완료 후 상태 초기화
+      setEditId(null);
+    } else {
+      const newDiary = {
+        id: Date.now(),
+        title,
+        content,
+        data: TodayDate,
+      };
+      const updatedDiaries = [...diaries, newDiary];
+      setDiaries(updatedDiaries);
+      localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
     }
-
-    else {
-      // 수정 중이 아닌 경우, 즉 새로운 일기를 작성할때 실행되는 코드
-      // (editId = null 인 경우)
-
-    // 새로운 객체 생성(for 저장)
-    const newDiary = {
-      id : Date.now(),
-      title : title,
-      content: content,
-      data: TodayDate
-    };
-  
-    // 새로운 일기
-    const updatedDiaries = [...diaries, newDiary];
-    setDiaries(updatedDiaries);
-
-    // 로컬에 새 일기 저장
-    localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-  }
-    // 저장 후 => 제목과 내용 칸 비우기
     setTitle('');
     setContent('');
-  }
+  };
 
-  // 수정버튼 클릭시
-  function editBtn(id){
+  // 수정버튼 클릭 시
+  const editBtn = (id) => {
     const diaryEdit = diaries.find(diary => diary.id === id);
-    
-    // if(diaryEdit) 이 존재한다면
-    if(diaryEdit) {
+    if (diaryEdit) {
       setTitle(diaryEdit.title);
       setContent(diaryEdit.content);
-      setEditId(id); // 수정 중인 일기의 id를 저장
+      setEditId(id);
     }
-  }
+  };
 
-  // 삭제버튼 클릭시
-  function delBtn(id){
+  // 삭제버튼 클릭 시
+  const delBtn = (id) => {
     const updatedDiaries = diaries.filter(diary => diary.id !== id);
     setDiaries(updatedDiaries);
     localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-
-    // 폼에 입력된 내용도 지우기
     setTitle(''); 
     setContent('');
-    setEditId(null); // 수정 중인 상태 초기화
-  }
+    setEditId(null);
+  };
 
-  // 취소버튼 클릭시 폼 초기화
-  const cancelEdit = function(){
+  // 취소 버튼 클릭 시 폼 초기화
+  const cancelEdit = () => {
     setTitle('');
     setContent('');
     setEditId(null);
-  }
+  };
 
   return (
     <div>
@@ -121,11 +96,11 @@ function IndexPage(){
             </a>
           </h1>
           <div className="login-text">
-            <p>환영합니다 <strong>{userName}</strong>님!</p>
+            <p>환영합니다 <strong>{nickname}</strong>님!</p>
             {isLoggedIn ? (
-              <button onClick={handleLogout} type="button" className="btn-logout">로그아웃</button>
+              <button onClick={handleLogout} className="btn-logout">로그아웃</button>
             ) : (
-              <button onClick={() => navigate('/login')} type="button" className="btn-logout">로그인</button>
+              <button onClick={() => navigate('/login')} className="btn-login">로그인</button>
             )}
           </div>
         </div>
@@ -169,26 +144,24 @@ function IndexPage(){
 
           <ol className="list">
             {diaries.map(diary => (
-
               <li key={diary.id}>
-              <article className="diary-article">
-                <header>
-                  <h3 className="article-title">{diary.title}</h3>
-                  <time className="article-time" dateTime="2023-02-24">{diary.data}</time>
-                </header>
-                <p className="article-content">{diary.content}</p>
-                <div className="button-group">
-                  {/* <button type="button" onClick={() => console.log(diary.id)}> */}
-                  <button type="button" onClick={() => editBtn(diary.id)}>
-                    <img src="/img/icon-edit.svg" alt="수정" />
-                  </button>
-                  <span></span>
-                  <button type="button" onClick={() => delBtn(diary.id)}>
-                    <img src="/img/icon-delete.svg" alt="삭제" />
-                  </button>
-                </div>
-              </article>
-            </li>
+                <article className="diary-article">
+                  <header>
+                    <h3 className="article-title">{diary.title}</h3>
+                    <time className="article-time" dateTime={diary.data}>{diary.data}</time>
+                  </header>
+                  <p className="article-content">{diary.content}</p>
+                  <div className="button-group">
+                    <button type="button" onClick={() => editBtn(diary.id)}>
+                      <img src="/img/icon-edit.svg" alt="수정" />
+                    </button>
+                    <span></span>
+                    <button type="button" onClick={() => delBtn(diary.id)}>
+                      <img src="/img/icon-delete.svg" alt="삭제" />
+                    </button>
+                  </div>
+                </article>
+              </li>
             ))}
           </ol>
         </section>
@@ -198,4 +171,3 @@ function IndexPage(){
 }
 
 export default IndexPage;
-
