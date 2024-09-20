@@ -57,8 +57,7 @@ function LoginPage() {
           <LogoSVG />
           <strong>로그인</strong>
         </h2>
-
-        {/* form 시작 */}
+        
         <form className="form" onSubmit={handleLogin}>
           <div>
             <label htmlFor="user-email">이메일</label>
