@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/common.css";
-import LogoSVG from "../assets/LogoSVG"; // LogoSVG 컴포넌트를 가져옴
-
+import LogoSVG from "../assets/LogoSVG"; 
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -22,8 +21,8 @@ function LoginPage() {
     );
 
     if (user) {
-      // 로그인 성공: 사용자 이름과 로그인 상태를 로컬 스토리지에 저장
-      localStorage.setItem("userName", user.name); // 사용자의 닉네임 저장
+      // 로그인 성공: 가입된 사용자 정보에서 닉네임 가져와서 저장
+      localStorage.setItem("nickname", user.nickname); // 'nickname'으로 저장된 닉네임을 저장
       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
 
       // 메인 페이지로 이동
