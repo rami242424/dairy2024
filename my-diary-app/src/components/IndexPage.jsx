@@ -22,61 +22,70 @@ function IndexPage() {
     navigate('/login');
   };
 
+  // 로그인한 사용자가 작성한 일기만 불러오기
   useEffect(() => {
     const storedDiaries = JSON.parse(localStorage.getItem('diaries')) || [];
-    setDiaries(storedDiaries);
-  }, []);
+
+    // step1 로그인한 사용자가 작성항 일기만 필터링
+    const userDiaries = storedDiaries.filter(diary => diary.author === nickname);
+    setDiaries(userDiaries); // step1 본인이 작성한 일기만 diaries에 저장
+  }, [nickname]);
 
   const today = new Date();
   const TodayDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getDate().toString().padStart(2, '0')}`;
-
+  
+  // step1: 일기 작성 시 본인 닉네임과 함께 저장
   const submitBtn = (e) => {
     e.preventDefault();
+
     if (!title || !content) {
-      alert("제목과 내용을 모두 입력해주세요.");
-      return;
+        alert("제목과 내용을 모두 입력해주세요.");
+        return;
     }
 
-    if (editId) {
-      const updatedDiaries = diaries.map(diary => 
-        diary.id === editId ? { ...diary, title, content, data: TodayDate } : diary
-      );
-      setDiaries(updatedDiaries);
-      localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-      setEditId(null);
-    } else {
-      const newDiary = {
-        id: Date.now(),
-        title,
-        content,
-        data: TodayDate,
-      };
-      const updatedDiaries = [...diaries, newDiary];
-      setDiaries(updatedDiaries);
-      localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-    }
+    const storedDiaries = JSON.parse(localStorage.getItem('diaries')) || [];
+
+    const newDiary = {
+      id: Date.now(),
+      title,
+      content,
+      data: TodayDate,
+      author: nickname // step1 : 로그인한 사용자의 닉네임을 일기의 작성자로 저장
+    };
+
+    const updatedDiaries = [...storedDiaries, newDiary];
+    setDiaries(updatedDiaries.filter(diary => diary.author === nickname)); // step1: 본인이 작성한 일기만 다시 필터링
+    localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
+    
     setTitle('');
     setContent('');
-  };
+};
 
   // 수정버튼 클릭 시
   const editBtn = (id) => {
     const diaryEdit = diaries.find(diary => diary.id === id);
-    if (diaryEdit) {
+    if (diaryEdit && diaryEdit.author === nickname) { // step1: 작성자와 현재 로그인한 사용자가 일치하는 경우만 수정 가능
       setTitle(diaryEdit.title);
       setContent(diaryEdit.content);
       setEditId(id);
+    } else {
+      alert("본인이 작성한 일기만 수정할 수 있습니다."); // step1: 다른 사용자의 일기를 수정하려고 할 때 경고
     }
   };
 
   // 삭제버튼 클릭 시
   const delBtn = (id) => {
-    const updatedDiaries = diaries.filter(diary => diary.id !== id);
-    setDiaries(updatedDiaries);
-    localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
-    setTitle(''); 
-    setContent('');
-    setEditId(null);
+    const diaryToDelete = diaries.find(diary => diary.id === id);
+    if(diaryToDelete && diaryToDelete.author === nickname) { // step1: 작성자와 현재 로그인한 사용자가 일치하는 경우만 삭제 가능
+      const updatedDiaries = diaries.filter(diary => diary.id !== id);
+      setDiaries(updatedDiaries);
+      localStorage.setItem('diaries', JSON.stringify(updatedDiaries));
+      setTitle(''); 
+      setContent('');
+      setEditId(null);
+    } else {
+      alert("본인이 작성한 일기만 삭제할 수 있습니다.") // step1: 다른 사용자의 일기를 삭제하려고 할 때 경고
+    }
   };
 
   // 취소 버튼 클릭 시 폼 초기화
@@ -147,8 +156,10 @@ function IndexPage() {
               <li key={diary.id}>
                 <article className="diary-article">
                   <header>
-                    <h3 className="article-title">{diary.title}</h3>
-                    <time className="article-time" dateTime={diary.data}>{diary.data}</time>
+                    <h3 className="article-title">
+                      {diary.title} [{diary.data}]
+                    </h3>
+                    <p className="article-author">작성자 : {diary.author}</p>
                   </header>
                   <p className="article-content">{diary.content}</p>
                   <div className="button-group">

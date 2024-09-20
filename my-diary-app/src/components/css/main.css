@@ -114,10 +114,12 @@ body {
   font-family: 'Pretendard-Bold';
 }
 
-.article-time {
-  font-size: 12px;
-  color: #677880;
+.article-author {
+  color: #5a6a72;
+  font-size: 14px;
+  line-height: 140%;
 }
+
 .article-content {
   color: #5a6a72;
   font-size: 14px;
