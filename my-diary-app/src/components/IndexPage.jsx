@@ -73,7 +73,7 @@ function IndexPage() {
     }
   };
 
-  // 삭제버튼 클릭 시
+  // 삭제버튼 클릭 후
   const delBtn = (id) => {
     const diaryToDelete = diaries.find(diary => diary.id === id);
     if(diaryToDelete && diaryToDelete.author === nickname) { // step1: 작성자와 현재 로그인한 사용자가 일치하는 경우만 삭제 가능
