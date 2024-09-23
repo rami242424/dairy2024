@@ -95,6 +95,12 @@ function IndexPage() {
     setEditId(null);
   };
 
+  // 브라우저 종료시 자동 로그아웃
+  window.addEventListener("beforeunload", () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("nickname");
+  })
+
   return (
     <div>
       <header className="header">
@@ -157,7 +163,7 @@ function IndexPage() {
                 <article className="diary-article">
                   <header>
                     <h3 className="article-title">
-                      {diary.title} [{diary.data}]
+                    [{diary.data}] {diary.title} 
                     </h3>
                     <p className="article-author">작성자 : {diary.author}</p>
                   </header>
