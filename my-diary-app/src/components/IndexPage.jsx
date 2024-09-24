@@ -9,7 +9,8 @@ function IndexPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [diaries, setDiaries] = useState([]);
-  const [editId, setEditId] = useState(null); 
+  const [editId, setEditId] = useState(null);
+  const [isPublic, setIsPublic] = useState(""); // 일기의 공개 여부를 저장하는 상태
 
   // 로그인한 유저의 닉네임 가져오기
   const nickname = localStorage.getItem('nickname') || '게스트'; 
@@ -22,9 +23,13 @@ function IndexPage() {
     navigate('/login');
   };
 
-  // 로그인한 사용자가 작성한 일기만 불러오기
+  // 로그인한 사용자가 작성한 일기만 불러오기 + 다른사용자의 공개일기
   useEffect(() => {
     const storedDiaries = JSON.parse(localStorage.getItem('diaries')) || [];
+
+    // 본인의 일기 또는 공개 일기만 필터링
+    const filteredDiaries = storedDiaries.filter(diary => diary.author === nickname || diary.isPublic);
+    setDiaries(filteredDiaries);
 
     // step1 로그인한 사용자가 작성항 일기만 필터링
     const userDiaries = storedDiaries.filter(diary => diary.author === nickname);
@@ -43,6 +48,12 @@ function IndexPage() {
         return;
     }
 
+    if (!isPublic) {
+      alert("공개 여부를 선택해주세요."); // 공개 여부 선택 안 했을 때 경고
+      return;
+    }
+  
+
     const storedDiaries = JSON.parse(localStorage.getItem('diaries')) || [];
 
     const newDiary = {
@@ -50,7 +61,8 @@ function IndexPage() {
       title,
       content,
       data: TodayDate,
-      author: nickname // step1 : 로그인한 사용자의 닉네임을 일기의 작성자로 저장
+      author: nickname, // step1 : 로그인한 사용자의 닉네임을 일기의 작성자로 저장
+      isPublic: isPublic === "공개"
     };
 
     const updatedDiaries = [...storedDiaries, newDiary];
@@ -59,6 +71,7 @@ function IndexPage() {
     
     setTitle('');
     setContent('');
+    setIsPublic(''); // 일기 작성 후 공개 여부 초기화
 };
 
   // 수정버튼 클릭 시
@@ -99,7 +112,13 @@ function IndexPage() {
   window.addEventListener("beforeunload", () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("nickname");
-  })
+  });
+
+  // 드롭다운에서 선택할 때 호출되는 함수 
+  const handleSelectChange = (e) => {
+    setIsPublic(e.target.value);
+  };
+  
 
   return (
     <div>
@@ -146,12 +165,21 @@ function IndexPage() {
               >
               </textarea>
             </div>
-            <div className="form-button">
+            <div className="form-button-wrapper">
               <button type="submit">작성하기</button>
               {editId && (
                 <button type="button" onClick={cancelEdit}>취소</button>
               )}
+              <div className="dropdown">
+                <select value={isPublic} onChange={handleSelectChange}>
+                  <option value="" disabled>공개여부</option> 
+                  <option value="공개">전체공개🌍</option>
+                  <option value="비공개">비공개🔒</option>
+                </select>
+              </div>
             </div>
+
+
           </form>
         </section>
         <section className="main-diary">

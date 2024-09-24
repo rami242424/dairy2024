@@ -7,7 +7,42 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* form styles */
+.form-button-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%; /* 전체 가로폭 100% */
 }
+
+.form-button-wrapper button,
+.form-button-wrapper .dropdown {
+  flex: 1;
+  height: 48px;
+  background-color: #29363d;
+  color: #f4f5f5;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdown select {
+  width: 100%; /* 드롭다운 선택 박스 전체 너비 */
+  height: 48px; /* 높이 조정 */
+  background: none;
+  border: none;
+  color: #29363d; /* 글씨 색상을 명확하게 설정 */
+  font-size: 16px; /* 글씨 크기를 명확하게 설정 */
+  padding: 8px 16px; /* 좌우 패딩을 추가하여 아이콘과 텍스트가 충분히 공간을 가짐 */
+  appearance: none;
+  text-align: center;
+}
+
+.dropdown option {
+  width: 100%; /* 옵션 항목의 너비를 드롭다운 박스에 맞춤 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+  color: #29363d; /* 옵션 텍스트 색상 */
+  font-size: 16px; /* 옵션 텍스트 크기 */
+}
+
